@@ -7,10 +7,6 @@ class Shape(metaclass=ABCMeta): #Component
     @abstractmethod
     def printSelf(self):
         return
-    
-    @abstractmethod
-    def area(self):
-        return
 
 class ShapeComposite(Shape): #Composite
     def __init__(self):
@@ -19,9 +15,6 @@ class ShapeComposite(Shape): #Composite
     def printSelf(self):
         for child in self._children:
             child.printSelf()
-
-    def area(self):
-        pass
 
     def add(self, component):
         self._children.add(component)
@@ -61,6 +54,7 @@ class Triangle(Shape): #Leaf
     def area(self):
         return self.base * self.height / 2
 
+#-----------執行測試-----------
 circle1 = Circle()
 rectangle1 = Rectangle()
 rectangle2 = Rectangle(3, 3)
