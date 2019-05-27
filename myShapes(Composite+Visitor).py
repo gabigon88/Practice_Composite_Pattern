@@ -3,12 +3,50 @@
 from abc import ABCMeta,abstractmethod
 from math import pi
 
-class Shape(metaclass=ABCMeta): #Component
+class Visitor(metaclass=ABCMeta): #Visitor
+    @abstractmethod
+    def visitShapeComposite(self, shapeComposite):
+        pass
+
+    @abstractmethod
+    def visitCircle(self, circle):
+        pass
+
+    @abstractmethod
+    def visitRectangle(self, rectangle):
+        pass
+
+    @abstractmethod
+    def visitTriangle(self, triangle):
+        pass
+
+class InfoVisitor(Visitor): #Visitor
+    def visitShapeComposite(self, shapeComposite):
+        print("ShapeComposite: ")
+        for child in shapeComposite._children:
+            print(">", end='')
+            child.accept(self)
+
+    def visitCircle(self, circle):
+        print("Circle: radius is %.2f" %circle.radius)
+
+    def visitRectangle(self, rectangle):
+        print("Rectangle: width is %.2f, height is %.2f" %(rectangle.width, rectangle.height))
+
+    def visitTriangle(self, triangle):
+        print("Triangle: base is %.2f, height is %.2f" %(triangle.base, triangle.height))
+
+
+class Shape(metaclass=ABCMeta): #Component+Visitorable
     @abstractmethod
     def printSelf(self):
         pass
 
-class ShapeComposite(Shape): #Composite
+    @abstractmethod
+    def accept(self, visitor):
+        pass
+
+class ShapeComposite(Shape): #Composite+Visitorable
     def __init__(self):
         self._children = set()
 
@@ -21,8 +59,11 @@ class ShapeComposite(Shape): #Composite
 
     def remove(self, component):
         self._children.discard(component)
+    
+    def accept(self, visitor):
+        visitor.visitShapeComposite(self)
 
-class Circle(Shape): #Leaf
+class Circle(Shape): #Leaf+Visitorable
     def __init__(self, _radius=3):
         self.radius = _radius
 
@@ -31,8 +72,11 @@ class Circle(Shape): #Leaf
 
     def area(self):
         return self.radius * self.radius * pi
+    
+    def accept(self, visitor):
+        visitor.visitCircle(self)
 
-class Rectangle(Shape): #Leaf
+class Rectangle(Shape): #Leaf+Visitorable
     def __init__(self, _width=3, _height=5):
         self.width = _width
         self.height = _height
@@ -42,8 +86,11 @@ class Rectangle(Shape): #Leaf
     
     def area(self):
         return self.width * self.height
-
-class Triangle(Shape): #Leaf
+    
+    def accept(self, visitor):
+        visitor.visitRectangle(self)
+    
+class Triangle(Shape): #Leaf+Visitorable
     def __init__(self, _base=3, _height=5):
         self.base = _base
         self.height = _height
@@ -53,6 +100,9 @@ class Triangle(Shape): #Leaf
     
     def area(self):
         return self.base * self.height / 2
+    
+    def accept(self, visitor):
+        visitor.visitTriangle(self)
 
 #-----------執行測試-----------
 circle1 = Circle()
@@ -74,3 +124,8 @@ allShapes.add(circle1)
 allShapes.add(rectangleList)
 allShapes.add(triangleList)
 allShapes.printSelf()
+
+print("-"*30)
+
+infoVisitor = InfoVisitor()
+allShapes.accept(infoVisitor)
