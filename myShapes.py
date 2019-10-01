@@ -8,18 +8,30 @@ class Shape(metaclass=ABCMeta): #Component
     def printSelf(self):
         pass
 
+    def is_composite(self) -> bool:
+        return False
+
 class ShapeComposite(Shape): #Composite
     def __init__(self):
         self._children = set()
 
-    def printSelf(self):
+    def printSelf(self, layer:int=0):
+        print("ShapeComposite:")
         for child in self._children:
-            child.printSelf()
+            if (child.is_composite()):
+                print('  '*layer + '└─', end="")
+                child.printSelf(layer+1)
+            else:
+                print('  '*layer + '└─', end="")
+                child.printSelf()
 
-    def add(self, component):
+    def is_composite(self) -> bool:
+        return True
+
+    def add(self, component:Shape):
         self._children.add(component)
 
-    def remove(self, component):
+    def remove(self, component:Shape):
         self._children.discard(component)
 
 class Circle(Shape): #Leaf
@@ -56,21 +68,23 @@ class Triangle(Shape): #Leaf
 
 #-----------執行測試-----------
 circle1 = Circle()
+
 rectangle1 = Rectangle()
 rectangle2 = Rectangle(5, 7)
-triangle1 = Triangle()
-triangle2 = Triangle(6, 8)
-
 rectangleList = ShapeComposite()
 rectangleList.add(rectangle1)
 rectangleList.add(rectangle2)
 
-triangleList = ShapeComposite()
-triangleList.add(triangle1)
-triangleList.add(triangle2)
+triangle1 = Triangle()
+triangle2 = Triangle(6, 8)
+triangleList1 = ShapeComposite()
+triangleList2 = ShapeComposite()
+triangleList1.add(triangle1)
+triangleList1.add(triangleList2)
+triangleList2.add(triangle2)
 
 allShapes = ShapeComposite()
 allShapes.add(circle1)
 allShapes.add(rectangleList)
-allShapes.add(triangleList)
+allShapes.add(triangleList1)
 allShapes.printSelf()
