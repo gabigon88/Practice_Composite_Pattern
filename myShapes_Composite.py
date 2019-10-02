@@ -1,6 +1,6 @@
 #抽象類別+抽象方法就等於物件導向中的interface
 #必須實現interface中的所有函數，否則會編譯錯誤
-from abc import ABCMeta,abstractmethod
+from abc import ABCMeta, abstractmethod
 from math import pi
 
 class Shape(metaclass=ABCMeta): #Component
@@ -15,23 +15,23 @@ class ShapeComposite(Shape): #Composite
     def __init__(self):
         self._children = set()
 
-    def printSelf(self, layer:int=0):
-        print("ShapeComposite:")
+    def printSelf(self, layer: int = 0):
+        print("ShapeComposite: ")
         for child in self._children:
+            print('  ' * layer + '└─', end="")
             if (child.is_composite()):
-                print('  '*layer + '└─', end="")
+
                 child.printSelf(layer+1)
             else:
-                print('  '*layer + '└─', end="")
                 child.printSelf()
 
     def is_composite(self) -> bool:
         return True
 
-    def add(self, component:Shape):
+    def add(self, component: Shape):
         self._children.add(component)
 
-    def remove(self, component:Shape):
+    def remove(self, component: Shape):
         self._children.discard(component)
 
 class Circle(Shape): #Leaf
